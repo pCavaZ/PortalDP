@@ -1,8 +1,4 @@
-﻿using PortalDP.Application.DTOs;
-using PortalDP.Application.Interfaces;
-using PortalDP.Domain.Entities;
-using PortalDP.Infrastructure.Data;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PortalDP.Application.DTOs;

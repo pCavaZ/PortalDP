@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-academia-600 to-academia-700 hover:from-academia-700 hover:to-academia-800 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gradient-to-r from-costura-500 to-costura-600 hover:from-costura-600 hover:to-costura-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-academia-600 text-academia-600 hover:bg-academia-600 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-academia-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  .calendar-day {
+    @apply aspect-square flex items-center justify-center rounded-lg cursor-pointer transition-all duration-200 font-medium;
+  }
+  
+  .calendar-day-available {
+    @apply bg-green-50 text-green-700 hover:bg-green-100 hover:scale-105;
+  }
+  
+  .calendar-day-my-class {
+    @apply bg-gradient-to-br from-academia-500 to-academia-600 text-white hover:from-academia-600 hover:to-academia-700;
+  }
+  
+  .calendar-day-cancelled {
+    @apply bg-yellow-100 text-yellow-800 hover:bg-yellow-200;
+  }
+  
+  .calendar-day-booked {
+    @apply bg-red-50 text-red-700 hover:bg-red-100;
+  }
+}

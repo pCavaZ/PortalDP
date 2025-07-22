@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\PortalDP.Domain\PortalDP.Domain.csproj" />
+	  <ProjectReference Include="..\PortalDP.Infrastructure\PortalDP.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>
