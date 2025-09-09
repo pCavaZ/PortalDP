@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PortalDP.Application.Interfaces;
@@ -118,28 +119,41 @@ if (string.IsNullOrEmpty(connectionString))
 }
 
 // Convertir DATABASE_URL de Render al formato que espera Npgsql
-if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+if (!string.IsNullOrEmpty(connectionString) &&
+    (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://")))
 {
     try
     {
-        // Asegurar que usa postgresql://
-        if (connectionString.StartsWith("postgres://"))
+        Log.Information("Raw DATABASE_URL format detected, converting...");
+
+        // Usar regex para extraer componentes de forma más robusta
+        var regex = new System.Text.RegularExpressions.Regex(
+            @"postgres(?:ql)?://(?<user>[^:]+):(?<password>[^@]+)@(?<host>[^:]+):(?<port>\d+)/(?<database>.+)");
+
+        var match = regex.Match(connectionString);
+
+        if (match.Success)
         {
-            connectionString = connectionString.Replace("postgres://", "postgresql://");
+            var host = match.Groups["host"].Value;
+            var portt = match.Groups["port"].Value;
+            var database = match.Groups["database"].Value;
+            var user = match.Groups["user"].Value;
+            var password = match.Groups["password"].Value;
+
+            connectionString = $"Host={host};Port={portt};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+
+            Log.Information("Successfully converted DATABASE_URL - Host: {Host}, Port: {Port}, Database: {Database}",
+                host, portt, database);
         }
-
-        var uri = new Uri(connectionString);
-        var db = uri.AbsolutePath.Trim('/');
-        var userInfo = uri.UserInfo.Split(':');
-
-        connectionString = $"Host={uri.Host};Port={uri.Port};Database={db};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
-
-        Log.Information("Converted DATABASE_URL to connection string successfully");
+        else
+        {
+            Log.Warning("Could not parse DATABASE_URL with regex, using as-is");
+        }
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Failed to parse DATABASE_URL: {ConnectionString}", connectionString);
-        throw;
+        Log.Error(ex, "Failed to parse DATABASE_URL, using original value");
+        // Si falla el parsing, usar la cadena original
     }
 }
 
