@@ -118,16 +118,6 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Connection string not found. Set DATABASE_URL environment variable or DefaultConnection in appsettings.json");
 }
 
-// TEMPORAL: Debug de la DATABASE_URL
-if (!string.IsNullOrEmpty(connectionString))
-{
-    Log.Information("=== DATABASE_URL DEBUG ===");
-    Log.Information("Full DATABASE_URL: {ConnectionString}", connectionString);
-    Log.Information("Starts with postgres://: {StartsWithPostgres}", connectionString.StartsWith("postgres://"));
-    Log.Information("Starts with postgresql://: {StartsWithPostgreSQL}", connectionString.StartsWith("postgresql://"));
-    Log.Information("=== END DEBUG ===");
-}
-
 // Convertir DATABASE_URL de Render al formato que espera Npgsql
 if (!string.IsNullOrEmpty(connectionString) &&
     (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://")))
@@ -136,19 +126,18 @@ if (!string.IsNullOrEmpty(connectionString) &&
     {
         Log.Information("Raw DATABASE_URL format detected, converting...");
 
-        // Usar regex para extraer componentes de forma más robusta
-        var regex = new System.Text.RegularExpressions.Regex(
-            @"postgres(?:ql)?://(?<user>[^:]+):(?<password>[^@]+)@(?<host>[^:]+):(?<port>\d+)/(?<database>.+)");
+        // Convertir a URI para parsing automático
+        var uri = new Uri(connectionString.Replace("postgres://", "postgresql://"));
 
-        var match = regex.Match(connectionString);
+        var host = uri.Host;
+        var portt = uri.Port > 0 ? uri.Port : 5432;  // Default PostgreSQL port si no se especifica
+        var database = uri.AbsolutePath.TrimStart('/');
+        var userInfo = uri.UserInfo.Split(':');
 
-        if (match.Success)
+        if (userInfo.Length >= 2)
         {
-            var host = match.Groups["host"].Value;
-            var portt = match.Groups["port"].Value;
-            var database = match.Groups["database"].Value;
-            var user = match.Groups["user"].Value;
-            var password = match.Groups["password"].Value;
+            var user = userInfo[0];
+            var password = string.Join(":", userInfo.Skip(1)); // En caso de que la password tenga ':'
 
             connectionString = $"Host={host};Port={portt};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 
@@ -157,12 +146,12 @@ if (!string.IsNullOrEmpty(connectionString) &&
         }
         else
         {
-            Log.Warning("Could not parse DATABASE_URL with regex, using as-is");
+            Log.Warning("Could not parse user info from DATABASE_URL");
         }
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Failed to parse DATABASE_URL, using original value");
+        Log.Error(ex, "Failed to parse DATABASE_URL: {Message}", ex.Message);
         // Si falla el parsing, usar la cadena original
     }
 }
