@@ -118,6 +118,16 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Connection string not found. Set DATABASE_URL environment variable or DefaultConnection in appsettings.json");
 }
 
+// TEMPORAL: Debug de la DATABASE_URL
+if (!string.IsNullOrEmpty(connectionString))
+{
+    Log.Information("=== DATABASE_URL DEBUG ===");
+    Log.Information("Full DATABASE_URL: {ConnectionString}", connectionString);
+    Log.Information("Starts with postgres://: {StartsWithPostgres}", connectionString.StartsWith("postgres://"));
+    Log.Information("Starts with postgresql://: {StartsWithPostgreSQL}", connectionString.StartsWith("postgresql://"));
+    Log.Information("=== END DEBUG ===");
+}
+
 // Convertir DATABASE_URL de Render al formato que espera Npgsql
 if (!string.IsNullOrEmpty(connectionString) &&
     (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://")))
