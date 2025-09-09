@@ -277,49 +277,90 @@ app.MapHealthChecks("/health");
 app.MapControllers();
 
 // MODIFICADO: Manejo más robusto de migraciones
+//using (var scope = app.Services.CreateScope())
+//{
+//    try
+//    {
+//        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+//        // En producción, solo aplicar migraciones si es necesario
+//        if (app.Environment.IsProduction())
+//        {
+//            // Verificar si hay migraciones pendientes
+//            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+//            if (pendingMigrations.Any())
+//            {
+//                Log.Information("Applying {Count} pending migrations", pendingMigrations.Count());
+//                await context.Database.MigrateAsync();
+//                Log.Information("Migrations applied successfully");
+//            }
+//            else
+//            {
+//                Log.Information("No pending migrations to apply");
+//            }
+//        }
+//        else
+//        {
+//            // En desarrollo, crear la base si no existe
+//            await context.Database.EnsureCreatedAsync();
+//        }
+
+//        Log.Information("Database connection successful");
+//    }
+//    catch (Exception ex)
+//    {
+//        Log.Fatal(ex, "Failed to connect to database or apply migrations during startup");
+
+//        // En lugar de fallar completamente, intentar continuar sin DB
+//        if (app.Environment.IsProduction())
+//        {
+//            Log.Warning("Continuing without database connection - some features may not work");
+//        }
+//        else
+//        {
+//            throw; // En desarrollo, sí fallar para debuggear
+//        }
+//    }
+//}
+
 using (var scope = app.Services.CreateScope())
 {
     try
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        // En producción, solo aplicar migraciones si es necesario
-        if (app.Environment.IsProduction())
+        Log.Information("Checking database migrations...");
+
+        // Verificar migraciones pendientes
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+        var appliedMigrations = await context.Database.GetAppliedMigrationsAsync();
+
+        Log.Information("Applied migrations: {AppliedCount}", appliedMigrations.Count());
+        Log.Information("Pending migrations: {PendingCount}", pendingMigrations.Count());
+
+        if (pendingMigrations.Any())
         {
-            // Verificar si hay migraciones pendientes
-            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-            if (pendingMigrations.Any())
-            {
-                Log.Information("Applying {Count} pending migrations", pendingMigrations.Count());
-                await context.Database.MigrateAsync();
-                Log.Information("Migrations applied successfully");
-            }
-            else
-            {
-                Log.Information("No pending migrations to apply");
-            }
+            Log.Information("Applying {Count} pending migrations: {Migrations}",
+                pendingMigrations.Count(),
+                string.Join(", ", pendingMigrations));
+
+            await context.Database.MigrateAsync();
+            Log.Information("Migrations applied successfully");
         }
         else
         {
-            // En desarrollo, crear la base si no existe
-            await context.Database.EnsureCreatedAsync();
+            Log.Information("No pending migrations to apply");
         }
 
-        Log.Information("Database connection successful");
+        // Verificar que las tablas se crearon
+        var canConnect = await context.Database.CanConnectAsync();
+        Log.Information("Database connection test: {CanConnect}", canConnect);
+
     }
     catch (Exception ex)
     {
-        Log.Fatal(ex, "Failed to connect to database or apply migrations during startup");
-
-        // En lugar de fallar completamente, intentar continuar sin DB
-        if (app.Environment.IsProduction())
-        {
-            Log.Warning("Continuing without database connection - some features may not work");
-        }
-        else
-        {
-            throw; // En desarrollo, sí fallar para debuggear
-        }
+        Log.Fatal(ex, "Failed to apply migrations: {Message}", ex.Message);
+        throw;
     }
 }
 
