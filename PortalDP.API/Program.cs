@@ -211,7 +211,7 @@ builder.Services.AddCors(options =>
 
 // Health checks
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<ApplicationDbContext>("database")
+    //.AddDbContextCheck<ApplicationDbContext>("database")
     .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
 
 // Configuración de caché (opcional)
