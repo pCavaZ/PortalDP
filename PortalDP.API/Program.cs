@@ -247,9 +247,15 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    // AGREGADO: Habilitar Swagger también en producción (temporal)
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Academia de Costura API v1");
+        c.RoutePrefix = string.Empty; // Swagger UI en la raíz para acceder desde /
+    });
+
     app.UseExceptionHandler("/Error");
-    // COMENTADO: HSTS puede causar problemas en algunos entornos de producción
-    // app.UseHsts();
 }
 
 // Middleware personalizado para logging de requests
