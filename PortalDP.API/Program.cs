@@ -117,6 +117,32 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Connection string not found. Set DATABASE_URL environment variable or DefaultConnection in appsettings.json");
 }
 
+// Convertir DATABASE_URL de Render al formato que espera Npgsql
+if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+{
+    try
+    {
+        // Asegurar que usa postgresql://
+        if (connectionString.StartsWith("postgres://"))
+        {
+            connectionString = connectionString.Replace("postgres://", "postgresql://");
+        }
+
+        var uri = new Uri(connectionString);
+        var db = uri.AbsolutePath.Trim('/');
+        var userInfo = uri.UserInfo.Split(':');
+
+        connectionString = $"Host={uri.Host};Port={uri.Port};Database={db};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+
+        Log.Information("Converted DATABASE_URL to connection string successfully");
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Failed to parse DATABASE_URL: {ConnectionString}", connectionString);
+        throw;
+    }
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(connectionString, npgsqlOptions =>
