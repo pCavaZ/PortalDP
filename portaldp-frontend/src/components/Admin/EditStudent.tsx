@@ -11,7 +11,7 @@ interface ModalProps {
   children: ReactNode;
 }
 
-interface CreateStudentFormProps {
+interface EditStudentFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateStudent) => Promise<void>;
@@ -39,8 +39,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   );
 };
 
-// Create Student
-const CreateStudentForm: React.FC<CreateStudentFormProps> = ({ isOpen, onClose, onSubmit }) => {
+// Edit Student
+const CreateStudentForm: React.FC<EditStudentFormProps> = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState<CreateStudent>({
     name: '',
     dni: '',
@@ -139,7 +139,7 @@ const CreateStudentForm: React.FC<CreateStudentFormProps> = ({ isOpen, onClose, 
         // }))
       };
 
-      const response = await apiService.createStudent(studentData);
+      //const response = await apiService.createStudent(studentData);
       await onSubmit(studentData);
       
       // Resetear formulario al éxito

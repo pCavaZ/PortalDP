@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scissors, User, Shield } from 'lucide-react';
+import { ScreenShare, User, Shield } from 'lucide-react';
 import authService from '../../services/auth';
+import logo from '../../assets/LogoCentrado.png';
 
 const Login: React.FC = () => {
   const [dni, setDni] = useState('');
@@ -43,14 +44,12 @@ const Login: React.FC = () => {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-academia-500 to-costura-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
-            <Scissors className="w-10 h-10 text-white" />
-          </div>
+          <img src={logo} className="mx-auto logo w-150 h-50" />
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Academia de Costura
+            Academia Doble Punt
           </h1>
           <p className="text-gray-600">
-            Accede a tu portal de clases
+            Accede a tu portal de clases y horarios
           </p>
         </div>
 

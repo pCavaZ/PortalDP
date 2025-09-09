@@ -152,16 +152,16 @@ namespace PortalDP.Application.Services
                 }
 
                 // Validar capacidad de horarios
-                foreach (var scheduleDto in createStudentDto.Schedules)
-                {
-                    var capacityCheck = await CheckScheduleCapacityAsync(scheduleDto.DayOfWeek, scheduleDto.StartTime, scheduleDto.EndTime);
-                    if (!capacityCheck.Success || !capacityCheck.Data)
-                    {
-                        var dayName = GetDayName(scheduleDto.DayOfWeek);
-                        var timeRange = $"{scheduleDto.StartTime:hh\\:mm}-{scheduleDto.EndTime:hh\\:mm}";
-                        return ApiResponse<StudentDto>.ErrorResponse($"Schedule for {dayName} {timeRange} is full (maximum 10 students)");
-                    }
-                }
+                //foreach (var scheduleDto in createStudentDto.Schedules)
+                //{
+                //    var capacityCheck = await CheckScheduleCapacityAsync(scheduleDto.DayOfWeek, scheduleDto.StartTime, scheduleDto.EndTime);
+                //    if (!capacityCheck.Success || !capacityCheck.Data)
+                //    {
+                //        var dayName = GetDayName(scheduleDto.DayOfWeek);
+                //        var timeRange = $"{scheduleDto.StartTime:hh\\:mm}-{scheduleDto.EndTime:hh\\:mm}";
+                //        return ApiResponse<StudentDto>.ErrorResponse($"Schedule for {dayName} {timeRange} is full (maximum 10 students)");
+                //    }
+                //}
 
                 // Crear el estudiante
                 var student = _mapper.Map<Student>(createStudentDto);

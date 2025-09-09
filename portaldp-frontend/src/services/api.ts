@@ -121,9 +121,15 @@ class ApiService {
     );
   }
 
-  async createStudent(student: CreateStudent): Promise<ApiResponse<CreateStudent>> {
+  async createStudent(createStudentDto: CreateStudent): Promise<ApiResponse<CreateStudent>> {
     return this.handleRequest(
-      this.client.post<ApiResponse<CreateStudent>>('/api/students', {student})
+      this.client.post<ApiResponse<CreateStudent>>('/api/students', createStudentDto )
+    )
+  }
+
+  async deleteStudent(id: number): Promise<ApiResponse<Boolean>> {
+    return this.handleRequest(
+      this.client.delete<ApiResponse<Boolean>>(`/api/students/${id}`)
     )
   }
 

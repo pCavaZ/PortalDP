@@ -15,9 +15,9 @@ export interface CreateStudent {
   dni: string;
   email: string;
   phone: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  //isActive: boolean;
+  //createdAt: string;
+  //updatedAt: string;
 }
 
 export interface Schedule {

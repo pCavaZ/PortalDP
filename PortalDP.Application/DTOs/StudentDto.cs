@@ -24,7 +24,7 @@ namespace PortalDP.Application.DTOs
         public string DNI { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Phone { get; set; }
-        public List<CreateScheduleDto> Schedules { get; set; } = new();
+        //public List<CreateScheduleDto> Schedules { get; set; } = new();
     }
 
     public class UpdateStudentDto

@@ -35,7 +35,7 @@ const AdminDashboard: React.FC = () => {
       // El tipo TestStudentsResponse tiene la propiedad 'students'
       if (response.success && response.students) {
         setStudents(response.students);
-        toast.success(`${response.students.length} estudiantes cargados`);
+        //toast.success(`${response.students.length} estudiantes cargados`);
       } else {
         console.warn('Respuesta inesperada:', response);
         // Usar datos mock si la respuesta no es la esperada
@@ -122,23 +122,23 @@ const AdminDashboard: React.FC = () => {
 
   const handleCreateStudent = async (studentData: any) => {
     try {
-      const token = localStorage.getItem('authToken');
+      // const token = localStorage.getItem('authToken');
 
-      const response = await fetch('/api/students', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(studentData)
-      });
+      // const response = await fetch('/api/students', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${token}`
+      //   },
+      //   body: JSON.stringify(studentData)
+      // });
 
-      if (!response.ok) {
-        throw new Error('Error al crear estudiante');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Error al crear estudiante');
+      // }
 
-      const result = await response.json();
-      console.log('Estudiante creado:', result);
+      // const result = await response.json();
+      // console.log('Estudiante creado:', result);
       
       // Aquí puedes refrescar la lista o mostrar un mensaje de éxito
       
@@ -147,6 +147,43 @@ const AdminDashboard: React.FC = () => {
       throw error;
     }
   };
+
+  const handleEditStudent = async (student: Student) => {
+  // Por ahora solo mostrar notificación, después implementaremos modal de edición
+  toast.error(`Editar estudiante: ${student.name}`);
+};
+
+const handleDeleteStudent = async (student: Student) => {
+  if (!window.confirm(`¿Estás seguro de que quieres eliminar a ${student.name}?`)) {
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('authToken');
+    
+    
+    const response = await apiService.deleteStudent(student.id);
+
+    if (!response.success) {
+      throw new Error(response.message || 'Error al eliminar estudiante');
+    }
+
+    if (response.success) {
+      toast.success('Estudiante eliminado exitosamente');
+      await loadStudents(); // Refresh list
+    } else {
+      throw new Error(response.message || 'Error al eliminar estudiante');
+    }
+  } catch (error) {
+    console.error('Error deleting student:', error);
+    toast.error('Error al eliminar el estudiante');
+  }
+};
+
+const handleViewStudent = (student: Student) => {
+  // Por ahora solo mostrar notificación, después implementaremos modal de vista
+  toast.error(`Ver detalles de: ${student.name}`);
+};
 
   const handleLogout = () => {
     authService.logout();
@@ -182,7 +219,7 @@ const AdminDashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-800">Administrador</p>
-                <p className="text-xs text-gray-500">Academia de Costura</p>
+                <p className="text-xs text-gray-500">Academia DoblePunt</p>
               </div>
               <button
                 onClick={handleLogout}
@@ -225,6 +262,7 @@ const AdminDashboard: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'students' && (
           <div className="space-y-6">
+
             {/* Students Header */}
             <div className="flex justify-between items-center">
               <div>
@@ -236,7 +274,6 @@ const AdminDashboard: React.FC = () => {
               <button 
                 className="btn-primary flex items-center space-x-2"
                 onClick={() => setIsCreateModalOpen(true)}
-                //onClick={() => toast.success('Función próximamente disponible')}
               >
                 <Plus className="w-5 h-5" />
                 <span>Nuevo Estudiante</span>
@@ -245,12 +282,6 @@ const AdminDashboard: React.FC = () => {
 
             {/* Search */}
             <div className="card p-4">
-              <div className="relative">
-                  <CreateStudentForm
-                    isOpen={isCreateModalOpen}
-                    onClose={() => setIsCreateModalOpen(false)}
-                    onSubmit={handleCreateStudent}
-                  />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
@@ -259,7 +290,6 @@ const AdminDashboard: React.FC = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-academia-500 focus:border-transparent"
                 />
-              </div>
               {searchTerm && (
                 <p className="text-sm text-gray-500 mt-2">
                   Mostrando {filteredStudents.length} de {students.length} estudiantes
@@ -272,7 +302,7 @@ const AdminDashboard: React.FC = () => {
               {isLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-academia-600 mr-3"></div>
-                  <span>Cargando estudiantes...</span>
+                  <span>Cargando alumnos...</span>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -280,7 +310,7 @@ const AdminDashboard: React.FC = () => {
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Estudiante
+                          Alumno
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           DNI
@@ -328,13 +358,13 @@ const AdminDashboard: React.FC = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <button 
                               className="text-academia-600 hover:text-academia-900 mr-3"
-                              onClick={() => toast.success('Función próximamente')}
+                              onClick={() => handleEditStudent(student)}
                             >
                               Editar
                             </button>
                             <button 
                               className="text-red-600 hover:text-red-900"
-                              onClick={() => toast.success('Función próximamente')}
+                              onClick={() => handleDeleteStudent(student)}
                             >
                               Eliminar
                             </button>
@@ -358,6 +388,17 @@ const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Student Crud */}
+            <div className="relative">
+                  <CreateStudentForm
+                    isOpen={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onSubmit={loadStudents}
+                  />
+            </div>
+
+            
           </div>
         )}
         

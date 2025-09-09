@@ -32,7 +32,7 @@ namespace PortalDP.Application.Mapping
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.Schedules))
+                //.ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.Schedules))
                 .ForMember(dest => dest.ClassCancellations, opt => opt.Ignore())
                 .ForMember(dest => dest.RecoveryClasses, opt => opt.Ignore());
         }
