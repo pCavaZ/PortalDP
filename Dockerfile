@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copiar todos los archivos .csproj primero (para cache de dependencias)
-COPY ["PortalDP.API/PortalDP.PI.csproj", "PortalDP.API/"]
+COPY ["PortalDP.API/PortalDP.API.csproj", "PortalDP.API/"]
 COPY ["PortalDP.Application/PortalDP.Application.csproj", "PortalDP.Application/"]
 COPY ["PortalDP.Domain/PortalDP.Domain.csproj", "PortalDP.Domain/"]
 COPY ["PortalDP.Infrastructure/PortalDP.Infrastructure.csproj", "PortalDP.Infrastructure/"]
